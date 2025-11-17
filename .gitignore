@@ -1,0 +1,3 @@
+debian-rootfs/
+mnt/
+*.img

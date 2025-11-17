@@ -1,0 +1,15 @@
+#!/bin/bash
+ROOTFS=./debian-rootfs
+
+sudo mkdir -p ${ROOTFS}
+
+sudo debootstrap 	\
+	--arch=amd64 	\
+	bookworm		\
+	${ROOTFS}		\
+	http://deb.debian.org/debian
+
+sudo mount --bind /dev ${ROOTFS}/dev
+sudo mount -t proc proc ${ROOTFS}/proc
+sudo mount -t sysfs sys ${ROOTFS}/sys
+sudo mount -t tmpfs tmpfs ${ROOTFS}/run
