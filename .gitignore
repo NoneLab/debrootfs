@@ -1,3 +1,4 @@
 debian-rootfs/
 mnt/
 *.img
+makedebrootfs
