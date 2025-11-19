@@ -32,7 +32,7 @@ func initShellIO(s *io.WriteCloser, v *exec.Cmd) error {
 	return nil
 }
 
-func CreateVirtualEnv(shell string, chroot_path string) *VirtualEnv {
+func CreateVirtualEnvBase(shell string, chroot_path string, flag bool) *VirtualEnv {
 	if shell == "" {
 		return nil
 	}
@@ -45,13 +45,23 @@ func CreateVirtualEnv(shell string, chroot_path string) *VirtualEnv {
 		Chroot: chroot_path,
 	}
 
-	ret.cmd.Dir = "/"
+	if flag {
+		ret.cmd.Dir = "/"
+	}
 
 	if err := initShellIO(&ret.stdin, ret.cmd); err != nil {
 		panic(err)
 	}
 
 	return ret
+}
+
+func CreateLocalEnv(shell string) *VirtualEnv {
+	return CreateVirtualEnvBase(shell, "", false)
+}
+
+func CreateVirtualEnv(shell string, chroot_path string) *VirtualEnv {
+	return CreateVirtualEnvBase(shell, chroot_path, true)
 }
 
 type VirtualEnvInterface interface {
@@ -83,6 +93,7 @@ func (v *VirtualEnv) CretaeChannel() (chan<- VirtualEnvCmd, <-chan error) {
 		err := v.Wait()
 		finCh <- err
 		close(finCh)
+		close(ch)
 	}()
 
 	v.cmd_ch = ch
