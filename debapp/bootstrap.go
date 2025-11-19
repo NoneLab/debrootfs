@@ -34,7 +34,7 @@ func BuildBootstrap() error {
 }
 
 func MountDefaultFS() error {
-	e := system.CreateVirtualEnv("/bin/bash", "./debroot")
+	e := system.CreateLocalEnv("/bin/bash")
 	if e == nil {
 		return &BootstrapError{
 			Msg: "Failed to Create Virtual Environment",
@@ -50,7 +50,10 @@ func MountDefaultFS() error {
 	go func() {
 		ch <- system.VirtualEnvCmd{
 			Cmds: []string{
-				"ls -al",
+				"sudo mount --bind /dev ./debroot/dev",
+				"sudo mount -t proc proc ./debroot/proc",
+				"sudo mount -t sysfs sys ./debroot/sys",
+				"sudo mount -t tmpfs tmpfs ./debroot/run",
 				"exit",
 			},
 		}
